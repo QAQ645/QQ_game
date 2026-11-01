@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f3ead9">
+  <meta name="description" content="企鹅迷宫·无情道：限时走出随机迷阵，找婆娘，还是保道心？">
+  <title>企鹅迷宫 · 无情道</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="is-modal">
+  <div class="page" id="pageShell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-seal" aria-hidden="true">无</span>
+        <div class="brand-copy">
+          <p class="eyebrow">WUQING MAZE · 404</p>
+          <h1>企鹅迷宫</h1>
+        </div>
+      </div>
+
+      <div class="hud" aria-label="本局状态">
+        <div class="hud-card time-card">
+          <span class="hud-label">剩余时辰</span>
+          <strong class="timer" id="timerValue">--:--</strong>
+          <span class="timer-track" aria-hidden="true"><span id="timerBar"></span></span>
+        </div>
+        <div class="hud-card phase-card">
+          <span class="hud-label">道心</span>
+          <span class="phase" id="phaseText">未入阵</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="game-layout">
+      <section class="play-column" aria-label="迷宫游戏区">
+        <div class="board-wrap">
+          <div class="board-frame">
+            <span class="round-badge">第 <b id="roundNumber">01</b> 局</span>
+            <div class="board-inner" id="mazeStage">
+              <canvas id="mazeCanvas" width="720" height="720" tabindex="0" role="application"
+                aria-label="企鹅迷宫，正在准备迷阵。"></canvas>
+            </div>
+            <span class="exit-note" aria-hidden="true">出口 ↘</span>
+          </div>
+        </div>
+        <p class="mobile-hint"><span aria-hidden="true">↕↔</span> 滑动带企鹅走 · 方向键与 WASD 同样可用</p>
+        <p class="sr-only" id="gameHelp">使用方向键或 WASD 移动企鹅。手机可在这块迷宫上向上下左右滑动。走到右下角的出口即可获胜。</p>
+        <p class="sr-only" id="a11yStatus" aria-live="polite">等待入阵。</p>
+      </section>
+
+      <aside class="side-panel" aria-label="玩法与心法">
+        <p class="eyebrow">心法 · 其一</p>
+        <h2 class="side-title">出口在右下。<br><em>婆娘不一定。</em></h2>
+        <p class="side-copy">红头巾、青竹枝、一本《无情道》。企鹅要去迷宫另一头找婆娘，可这门功课，向来不讲道理。</p>
+
+        <div class="rule-list">
+          <div class="rule">
+            <span class="rule-index">壹</span>
+            <div>
+              <strong>择时入阵</strong>
+              <p>每局 2 / 3 / 4 / 5 分钟，默认 3 分钟。</p>
+            </div>
+          </div>
+          <div class="rule">
+            <span class="rule-index">贰</span>
+            <div>
+              <strong>找寻出口</strong>
+              <p>方向键或 <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>，手机直接滑动。</p>
+            </div>
+          </div>
+          <div class="rule">
+            <span class="rule-index">叁</span>
+            <div>
+              <strong>莫问结局</strong>
+              <p>走出去是道心已损，走不出去是婆娘不要。横竖都是修行。</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="side-quote">“世间安得两全法，<br>不负迷宫不负婆娘。”</p>
+        <div class="side-tag"><span aria-hidden="true">无</span> 每一局，都是新的迷阵</div>
+      </aside>
+    </main>
+
+    <footer class="site-footer">
+      <span>不用联网 · 不用登录 · 每局重新生成迷阵</span>
+      <span class="footer-seal" aria-hidden="true">无情道 · 第 404 课</span>
+    </footer>
+  </div>
+
+  <div class="overlay" id="startScreen">
+    <section class="panel start-panel" role="dialog" aria-modal="true" aria-labelledby="startTitle">
+      <div class="start-visual" aria-hidden="true">
+        <span class="red-sun"></span>
+        <span class="poster-seal">無情道</span>
+        <span class="poster-vertical">找婆娘<br>第 404 天</span>
+        <img src="assets/penguin-hero.png" alt="" draggable="false">
+        <span class="poster-caption">「找婆娘。」</span>
+      </div>
+
+      <div class="start-copy">
+        <p class="eyebrow">企鹅迷阵 · 限时挑战</p>
+        <h2 id="startTitle">走得出迷宫，<br><em>走不出无情道。</em></h2>
+        <p class="lede">为了找婆娘，企鹅翻开《无情道》闯进心魔迷阵。限时走到右下角出口——至于为什么赢了也是“道心已损”，建议不要细想。</p>
+
+        <div class="duration-block">
+          <div class="duration-heading">
+            <span id="durationLabel">选择时辰</span>
+            <span id="durationHint">默认 3 分钟</span>
+          </div>
+          <div class="duration-options" role="group" aria-labelledby="durationLabel">
+            <button class="duration-option" type="button" data-minutes="2" aria-pressed="false"><b>2</b><span>分钟</span></button>
+            <button class="duration-option" type="button" data-minutes="3" aria-pressed="true"><b>3</b><span>分钟</span></button>
+            <button class="duration-option" type="button" data-minutes="4" aria-pressed="false"><b>4</b><span>分钟</span></button>
+            <button class="duration-option" type="button" data-minutes="5" aria-pressed="false"><b>5</b><span>分钟</span></button>
+          </div>
+        </div>
+
+        <button class="start-btn" id="startButton" type="button">
+          <span>执书入阵</span>
+          <span class="start-btn-meta" id="startButtonMeta">3 分钟 →</span>
+        </button>
+        <p class="micro-hint">键盘方向键 / WASD · 手机滑动 · 迷阵保证有解</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="overlay" id="resultScreen" hidden>
+    <section class="panel result-panel" id="resultPanel" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+      <div class="result-visual" aria-hidden="true">
+        <span class="result-watermark" id="resultWatermark">损</span>
+        <img src="assets/penguin-win.png" alt="" id="resultImage" draggable="false">
+      </div>
+      <div class="result-copy">
+        <p class="eyebrow" id="resultKicker">结局一 · 道心已损</p>
+        <h2 class="result-title" id="resultTitle" tabindex="-1">我道心已损</h2>
+        <p class="result-desc" id="resultDescription"></p>
+
+        <div class="result-meta">
+          <span>本局用时<strong id="resultTime">--:--</strong></span>
+          <span>出口<strong id="resultExit">--</strong></span>
+        </div>
+
+        <div class="result-actions">
+          <button class="primary-btn" type="button" id="againButton"><span>再闯一局</span><span aria-hidden="true">→</span></button>
+          <button class="ghost-btn" type="button" id="reselectButton">重选时长</button>
+        </div>
+        <p class="micro-hint">下一局的迷宫会重新生成 · 结局随缘</p>
+      </div>
+    </section>
+  </div>
+
+  <script src="game.js" defer></script>
+</body>
+</html>
